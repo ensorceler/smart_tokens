@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// author: mel0n
+
 pragma solidity >=0.7.0 <0.9.0;
 
 contract ERC20 {
@@ -21,18 +23,25 @@ contract ERC20 {
     }
 
     modifier checkAccessToWithdraw(address _from) {
+        // the caller has to be _from themselves or the caller has to be given access by _from
         require(
-            accessToWithdraw[_from][msg.sender] == true,
+            _from == msg.sender || accessToWithdraw[_from][msg.sender] == true,
             "caller doesn't have access to the account he's trying to withdraw balance from"
         );
         _;
     }
 
     modifier checkAllowance(address _from, uint256 _value) {
+        // the spender has to have sufficient allowance given by the owner to spend
         require(
             setAllowance[_from][msg.sender] >= _value,
             "allowance not enough to transfer money"
         );
+        _;
+    }
+
+    modifier senderNotEqualToReceiver(address _from, address _to) {
+        require(_from != _to, "can't send any tokens to yourself");
         _;
     }
 
@@ -42,11 +51,14 @@ contract ERC20 {
 
     function transfer(address payable _to, uint256 amount)
         public
+        senderNotEqualToReceiver(msg.sender, _to)
         returns (bool)
     {
         if (balances[msg.sender] >= amount) {
             balances[msg.sender] -= amount;
             balances[_to] += amount;
+            // emitting  the transfer event
+            emit Transfer(msg.sender, _to, amount);
             return true;
         } else
             revert(
@@ -60,6 +72,7 @@ contract ERC20 {
         uint256 _value
     )
         public
+        senderNotEqualToReceiver(_from, _to)
         checkAccessToWithdraw(_from)
         checkAllowance(_from, _value)
         returns (bool)
@@ -67,6 +80,7 @@ contract ERC20 {
         setAllowance[_from][msg.sender] -= _value;
         balances[_from] -= _value;
         balances[_to] += _value;
+        // emitting the transfer event
         emit Transfer(_from, _to, _value);
         return true;
     }
@@ -77,6 +91,7 @@ contract ERC20 {
         }
         accessToWithdraw[msg.sender][_spender] = true;
         setAllowance[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
     }
 
     function allowance(address _owner, address _spender)
@@ -84,6 +99,11 @@ contract ERC20 {
         view
         returns (uint256)
     {
+        require(
+            accessToWithdraw[_owner][_spender] == true,
+            "there is no allowance given by owner to the spender"
+        );
+
         return setAllowance[_owner][_spender];
     }
 }
