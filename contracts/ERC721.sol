@@ -2,34 +2,6 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-/*
-
-accounts:
-A=>c4
-B=>b2
-C=>dB
-D=>aB
-
-deployer: c4
-
-mint nft => [69420 => owner A, approved B]
-
-now B will transfer token from A(c4) to C(dB)
-okay done
-now no one should have approval for the token
-if C decides to approve then only then it can be transferred by other parties 
-
-mint => [420 => owner A ]
-mint => [69 => owner A]
-
-approval token 420 to B 
-
-setApproval for all to C (C can approve all the token that is owned by A)
-
-
-
-*/
-
 contract ERC721 {
     string public constant NAME = "Melon NFT";
     string public constant SYMBOL = "MNFT";
