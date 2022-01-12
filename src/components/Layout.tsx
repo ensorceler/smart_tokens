@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <Navbar />
       <div className="flex flex-row">
         <Drawer />
-        {children}
+        <div className="p-4 text-center">{children}</div>
       </div>
     </div>
   );
