@@ -24,9 +24,28 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
+
+async function ERC20Deploy() {
+  const Token = await hre.ethers.getContractFactory("ERC20");
+  const token = await Token.deploy();
+
+  await token.deployed();
+
+  console.log("ERC20 token deployed to:", token.address);
+}
+
+ERC20Deploy()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.log(error);
+    process.exit(1);
+  });
+
+/*
 main()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
     process.exit(1);
   });
+*/

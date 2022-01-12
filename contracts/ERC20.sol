@@ -7,7 +7,7 @@ contract ERC20 {
     string public constant NAME = "Melon Smart Token";
     string public constant SYMBOL = "MST";
 
-    uint256 public immutable totalSupply = 20000;
+    uint256 public constant totalSupply = 20000;
     address payable public owner;
 
     mapping(address => uint256) balances;
@@ -99,6 +99,7 @@ contract ERC20 {
         view
         returns (uint256)
     {
+        // do you actually check whether it is allowance is given ?
         require(
             accessToWithdraw[_owner][_spender] == true,
             "there is no allowance given by owner to the spender"

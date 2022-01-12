@@ -14,7 +14,7 @@ contract ERC721 {
 
     mapping(address => mapping(uint256 => address)) allowed;
     /** can transfer all the tokens on your behalf , use carefully */
-    mapping(address => mapping(address => bool)) allowedForAll;
+    mapping(address => mapping(address => bool)) operator;
 
     address contractOwner;
     modifier onlyOwner() {
@@ -67,14 +67,14 @@ contract ERC721 {
         require(
             msg.sender == from ||
                 allowed[from][tokenId] == msg.sender ||
-                allowedForAll[from][msg.sender] == true,
+                operator[from][msg.sender] == true,
             "you have no access to this nft(you are neither an owner or someone who is allowed by the owner"
         );
         balances[from] -= 1;
         balances[to] += 1;
         nftOwner[tokenId] = to;
         delete allowed[from][tokenId];
-        delete allowedForAll[from][msg.sender];
+        delete operator[from][msg.sender];
     }
 
     function approve(address to, uint256 tokenId)
@@ -98,16 +98,16 @@ contract ERC721 {
     }
 
     function setApprovalForAll(address to, bool _approved) public {
-        allowedForAll[msg.sender][to] = _approved;
+        operator[msg.sender][to] = _approved;
         emit ApprovalForAll(msg.sender, to, _approved);
     }
 
-    function isApprovedForAll(address owner, address operator)
+    function isApprovedForAll(address _owner, address _operator)
         public
         view
         returns (bool)
     {
-        return allowedForAll[owner][operator];
+        return operator[_owner][_operator];
     }
 
     function exists(uint256 tokenId) public view returns (bool) {
